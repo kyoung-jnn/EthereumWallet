@@ -66,6 +66,7 @@ export default class CreateWalletScreen extends Component {
   };
 
   _createWallet = async () => {
+    
     var ethereumjsutil = require('ethereumjs-util');
 
     // state에 저장된 mnemonic(니모닉) 가져오기

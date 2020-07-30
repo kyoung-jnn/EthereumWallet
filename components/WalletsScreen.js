@@ -12,6 +12,7 @@ import {
   Button,
 } from 'native-base';
 import {NavigationEvents} from 'react-navigation';
+import { NativeViewGestureHandler } from 'react-native-gesture-handler';
 
 export default class WalletsScreen extends Component {
   static navigationOptions = {
@@ -19,10 +20,13 @@ export default class WalletsScreen extends Component {
   };
 
   constructor(props) {
-    super(props);
+    super(props);    
+
     this.state = {
+      navigate: null,
       wallets: [],
     };
+
   }
 
   // 컴포넌트 활성화시 지갑 정보 불러오기
@@ -37,8 +41,16 @@ export default class WalletsScreen extends Component {
 
   
   render() {
-    const {navigate} = this.props.navigation;
+    if("navigation" in this.props){
+      this.setState({
+        navigate: this.props.navigation.navigate
+      })
+    }
 
+    console.log('props')
+    console.log(this.props);
+    console.log('state')
+    console.log(this.state);
     return (
       <View style={styles.container}>
         <NavigationEvents onWillFocus={this._onWillFocus}> </NavigationEvents>
@@ -58,7 +70,7 @@ export default class WalletsScreen extends Component {
                     iconLeft
                     large
                     block
-                    onPress={() => navigate('CreateWallet')}>
+                    onPress={() => this.state.navigate('CreateWallet')}>
                     <Icon name="ios-add-circle-outline"></Icon>
                     <Text>지갑 생성하기</Text>
                   </Button>
