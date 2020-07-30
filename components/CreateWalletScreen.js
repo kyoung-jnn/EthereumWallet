@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, Alert} from 'react-native';
+import {StyleSheet, View} from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
+
 import {
   Container,
   Content,
@@ -20,6 +22,7 @@ import {
 import bip39 from 'react-native-bip39';
 import bip32 from 'bip32';
 import ethUtil from 'ethereumjs-util';
+import RNSecureKeyStore, {ACCESSIBLE} from 'react-native-secure-key-store';
 
 export default class CreateWalletScreen extends Component {
   constructor(props) {
@@ -41,37 +44,72 @@ export default class CreateWalletScreen extends Component {
     });
   };
 
+  // 지갑 저장
+  _storeData = async (wallet, privateKey) => {
+    try {
+      // 지갑 목록 정보 가져오기
+      const wallets = JSON.parse(await AsyncStorage.getItem('WALLETS')) || [];
+
+      // 지갑 목록에 추가하기
+      wallets.push(wallet);
+
+      // 지갑 목록 정보 저장하기 (새로운 정보로)
+      await AsyncStorage.setItem('WALLETS', JSON.stringify(wallets));
+
+      // priavte key를 안전한 영역에 저장
+      await RNSecureKeyStore.set(wallet.address, privateKey, {
+        accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   _createWallet = async () => {
-      var ethereumjsutil = require('ethereumjs-util');
+    var ethereumjsutil = require('ethereumjs-util');
 
-      // state에 저장된 mnemonic 가져오기
-      const seed = bip39.mnemonicToSeed(this.state.mnemonic);
+    // state에 저장된 mnemonic(니모닉) 가져오기
+    const seed = bip39.mnemonicToSeed(this.state.mnemonic);
 
-      // 마스터 키 생성 HDPrivateKey(확장개인키)
-      // BIP-32 이용
-      const root = bip32.fromSeed(seed);
+    // 시드에서 마스터 키 생성 HDPrivateKey(확장개인키)
+    // BIP-32 이용
+    const root = bip32.fromSeed(seed);
 
-      // // 이더리움 차일드 개인키 생성
-      // BIP-44 이용
-      // derivePath 형태 => m/purpose'/coin_type'/account'/change/address_index
-      const xPrivKey = root.derivePath("m/44'/60'/0'/0/0");
-      const privKey = xPrivKey.privateKey.toString('hex');
+    // 이더리움 차일드 개인키 생성
+    // BIP-44 이용
+    // derivePath 형태 => m/purpose'/coin_type'/account'/change/address_index
+    const xPrivKey = root.derivePath("m/44'/60'/0'/0/0");
+    const privateKey = xPrivKey.privateKey.toString('hex');
 
-      // 이더리움 주소 생성
-      // 0x + 해시
-      let address = '0x' + ethereumjsutil.pubToAddress(xPrivKey.publicKey, true).toString('hex');
+    // public key에서 이더리움 주소 생성
+    // 0x + 해시
+    let address =
+      '0x' +
+      ethereumjsutil.pubToAddress(xPrivKey.publicKey, true).toString('hex');
 
-      console.log('이더리움 주소: ');
-      console.log(address);
+    console.log('이더리움 주소: ');
+    console.log(address);
 
-       // 이더리움 EIP-55 체크섬 주소로 변환
-       // 소문자를 대문자로 변환
-       address = ethereumjsutil.toChecksumAddress(address).toString('hex');
+    // 이더리움 EIP-55 체크섬 주소로 변환
+    // 소문자를 대문자로 변환
+    address = ethereumjsutil.toChecksumAddress(address).toString('hex');
 
-       console.log('체크섬 주소: ');
-      console.log(address);
-       alert(address);
-   
+    console.log('체크섬 주소: ');
+    console.log(address);
+    alert(address);
+
+    // 저장할 지갑 정보
+    const wallet = {
+      name: '이더리움',
+      coinType:'ETH',
+      symbol: 'ETH',
+      address
+    }
+
+    await this._storeData(wallet,privateKey);
+
+    // 지갑목록으로 돌아가기
+    this.props.navigation.goBack();
   };
 
   render() {
