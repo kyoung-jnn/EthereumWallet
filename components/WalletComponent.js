@@ -13,7 +13,8 @@ import {
 
 export default function WalletComponent(props) {
   const wallet = props.wallet;
-
+  console.log('지갑목록에 표현될 지갑')
+  console.log(wallet);
   return (
     <Card>
       <CardItem>
@@ -32,6 +33,19 @@ export default function WalletComponent(props) {
         <Right>
           <Icon name='dots-vertical' type='MaterialCommunityIcons' />
         </Right>
+      </CardItem>
+      <CardItem>
+        <Text note ellipsizeMode="middle" numberOfLines={1} selectable={true}>{wallet.address}</Text>
+      </CardItem>
+      <CardItem>
+        <Body style={{alignItems:'flex-end'}}>
+          <Text>
+            {wallet.balance || '0.00'}
+          </Text>
+          <Text note style={{ marginRight:0 }}>
+            ≈ ￦ {wallet.convertPrice || '0.00'}
+          </Text>
+        </Body>
       </CardItem>
     </Card>
   );
