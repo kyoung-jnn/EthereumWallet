@@ -12,9 +12,10 @@ import {
   Button,
 } from 'native-base';
 import {NavigationEvents} from 'react-navigation';
-import { NativeViewGestureHandler } from 'react-native-gesture-handler';
+import {NativeViewGestureHandler} from 'react-native-gesture-handler';
 
 import WalletComponent from './WalletComponent';
+import {ethers} from 'ethers';
 
 export default class WalletsScreen extends Component {
   static navigationOptions = {
@@ -22,12 +23,11 @@ export default class WalletsScreen extends Component {
   };
 
   constructor(props) {
-    super(props);    
+    super(props);
 
     this.state = {
       wallets: [],
     };
-
   }
 
   // 컴포넌트 활성화시 지갑 정보 불러오기
@@ -40,10 +40,32 @@ export default class WalletsScreen extends Component {
     });
   };
 
-  
+  componentDidMount() {
+    // 1. provider 생성
+    let provider = ethers.getDefaultProvider('ropsten');
+
+    const pollingInterval = 30 * 1000; // 22초
+    this.poller = setInterval(() => {
+      const wallets = [...this.state.wallets];
+
+      // 2. 지갑 잔액 조회 시작
+      wallets.forEach(wallet => {
+        provider.getBalance(wallet.address).then((balance) => {
+          // 이더리움 잔액 wei 를 ether 로 변환하기
+          const etherString = ethers.utils.formatEther(balance);
+          wallet.balance = etherString;
+        });
+      });
+
+      // 3. 지갑 목록 화면 갱신 및 Storage 업데이트
+      this.setState({wallets}, () => {
+        AsyncStorage.setItem('WALLETS', JSON.stringify(wallets));
+      });
+
+    }, pollingInterval); // 20초 마다 수행하기
+  }
+
   render() {
-    console.log(this.props);
-    
     return (
       <View style={styles.container}>
         <NavigationEvents onWillFocus={this._onWillFocus}> </NavigationEvents>
@@ -51,8 +73,15 @@ export default class WalletsScreen extends Component {
           <Content padder>
             {
               // state에 wallet 정보를 하나씩 생성
-              this.state.wallets.map((wallet,index) => {
-                return <WalletComponent wallet={wallet} key={index}></WalletComponent>;
+              this.state.wallets.map((wallet) => {
+                return (
+                  <WalletComponent
+                    wallet={wallet}
+                    key={wallet.address}
+                    onPress={() => {
+                      this.props.navigation.navigate('WalletInfo', wallet);
+                    }}></WalletComponent>
+                );
               })
             }
             <Card>
@@ -63,8 +92,9 @@ export default class WalletsScreen extends Component {
                     iconLeft
                     large
                     block
-                    onPress={() => this.props.navigation.navigate('CreateWallet')}
-                    >
+                    onPress={() =>
+                      this.props.navigation.navigate('CreateWallet')
+                    }>
                     <Icon name="ios-add-circle-outline"></Icon>
                     <Text>지갑 생성하기</Text>
                   </Button>
