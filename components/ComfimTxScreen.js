@@ -28,6 +28,7 @@ import {
   Item,
   Input,
   Label,
+  Row,
 } from 'native-base';
 import {ethers} from 'ethers';
 import Loader from './Loader';
@@ -112,7 +113,8 @@ export default class ConfimTxScreen extends Component {
     // 7. 서명된 이더리움 transaction 배포하기
     try {
       const tx = await provider.sendTransaction(sign);
-
+    
+      console.log(tx);
       // 8. 완료 화면으로 이동
       this.props.navigation.navigate('CompleteScreen', tx.hash);
     } catch (e) {
@@ -128,35 +130,59 @@ export default class ConfimTxScreen extends Component {
   render() {
     let state = this.state;
     return (
-      <Container>
+      <Container style={styles.container}>
         <View>
-          <View>
+          <View
+            style={{
+              padding: 20,
+              alignItems: 'center',
+              borderBottomColor: '#D2D8DD',
+              borderBottomWidth: 1,
+            }}>
             <Text note>출금 금액</Text>
-            <Text style={{fontSize: 30, fontWeight: '600', marginBottom: 20}}>
+            <Text style={{fontSize: 30, fontWeight: '500', marginBottom: 20}}>
               {state.value} ETH
             </Text>
             <Text note>받는 주소</Text>
-            <Text numberOfLines={1}>{state.toAddress}</Text>
+            <Text numberOfLines={1} ellipsizeMode="middle">
+              {state.toAddress}
+            </Text>
           </View>
-          <View>
-            <View>
+          <View style={{marginHorizontal: 25, marginVertical: 20}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingVertical: 20,
+                borderBottomColor: '#D2D8DD',
+                borderBottomWidth: 1,
+              }}>
               <Text note>수수료 (가스비)</Text>
-              <View>
-                <Text>{state.fee}</Text>
+              <View style={{alignItems: 'flex-end'}}>
+                <Text style={{fontSize:25}}>{state.fee}</Text>
                 <Text note>가스 가격 {state.gasPrice} Gwei</Text>
               </View>
             </View>
-            <View>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                paddingVertical: 20,
+                borderBottomColor: '#D2D8DD',
+                borderBottomWidth: 1,
+              }}>
               <Text note>총 비용 (출금 금액 + 수수료)</Text>
-              <Text>{state.totalAmount} ETH</Text>
+              <Text style={{fontSize:25}}>{state.totalAmount} ETH</Text>
             </View>
           </View>
-          <View>
-            <Text>위 거래내용을 확인하시기 바랍니다.</Text>
-            <Text>아래 승인버튼을 선택하시면 계속해서 거래를 진행합니다.</Text>
+          <View style={styles.hintBox}>
+            <Text style={styles.hintText}>위 거래내용을 확인하시기 바랍니다.</Text>
+            <Text style={styles.hintText}>아래 승인버튼을 선택하시면 계속해서 거래를 진행합니다.</Text>
           </View>
         </View>
-        <View>
+        <View style={{marginHorizontal:10,marginBottom:30}}>
           <Button block disabled={false} onPress={this.sign}>
             <Text>승인</Text>
           </Button>

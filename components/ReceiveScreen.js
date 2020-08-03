@@ -25,7 +25,7 @@ export default class ReceiveScreen extends Component {
 
   render() {
     const wallet = this.props.navigation.state.params;
-    console.log(wallet);
+
     return (
       <Container style={styles.container}>
         <Header style={{backgroundColor:'black', titleFontColor:'black'}}>

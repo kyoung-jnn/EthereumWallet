@@ -33,14 +33,14 @@ export default class SendScreen extends Component {
   static navigationOptions = {
     header: null,
   };
-  
+
   constructor(props) {
     super(props);
 
     const wallet = props.navigation.state.params;
 
     this.state = {
-      fromAddress: '',
+      fromAddress: wallet.address,
       toAddress: '',
       gasPrice: '2', // 가스 비용
       gasLimit: '21000',
@@ -81,15 +81,16 @@ export default class SendScreen extends Component {
       // 이제하는데 필요한 총 금액 계산 (이체 금액 + 가스비)
       let totalRequiredAmount = ether.add(estimateFee);
 
-      let balance = ethers.utils.parseEther(wallet.balance);
-      if (balance.lt(totalRequiredAmount)) {
-        let totalRequiredEther = ethers.utils.formatEther(totalRequiredAmount);
-        return Alert.alert(
-          '잔액이 부족합니다.',
-          `수수료 포함하여 필요한 금액\n${totalRequiredEther} ETH`,
-        );
-      }
+      // let balance = ethers.utils.parseEther(wallet.balance);
+      // if (balance.lt(totalRequiredAmount)) {
+      //   let totalRequiredEther = ethers.utils.formatEther(totalRequiredAmount);
+      //   return Alert.alert(
+      //     '잔액이 부족합니다.',
+      //     `수수료 포함하여 필요한 금액\n${totalRequiredEther} ETH`,
+      //   );
+      // }
     } catch (e) {
+      console.log(e);
       return Alert.alert('이체 금액을 확인해주세요.');
     }
 
@@ -103,6 +104,7 @@ export default class SendScreen extends Component {
     }
 
     Alert.alert('ok');
+    this.props.navigation.navigate('ComfimTxScreen',this.state);
   };
 
   render() {
@@ -112,9 +114,9 @@ export default class SendScreen extends Component {
       <Container style={StyleSheet.container}>
         <Header>
           <Left>
-            <Button
-              transparent
-              onPress={() => this.props.navigation.goBack()}></Button>
+            <Button transparent onPress={() => this.props.navigation.goBack()}>
+              <Icon name="arrow-back" />
+            </Button>
           </Left>
           <Body>
             <Title>{wallet.symbol} 출금</Title>
@@ -144,7 +146,7 @@ export default class SendScreen extends Component {
                 placeholderTextColor="#BBB"
               />
               <TouchableOpacity>
-                <Icon name="qrcode-scan" type="MaterialCommunityIcons" />
+                <Icon name="qrcode-scan" type="MaterialCommunityIcons"/>
               </TouchableOpacity>
             </Item>
           </View>
