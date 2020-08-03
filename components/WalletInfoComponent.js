@@ -17,9 +17,7 @@ import {
 } from 'native-base';
 
 export default class WalletInfoComponent extends Component {
-  static navigationOptions = {
-  
-  };
+  static navigationOptions = {};
 
   render() {
     const wallet = this.props.navigation.state.params;
@@ -63,14 +61,17 @@ export default class WalletInfoComponent extends Component {
                 info
                 style={{flex: 1, justifyContent: 'center', marginRight: 10}}
                 onPress={() => {
-                  this.props.navigation.navigate('ReceiveScreen',wallet);
+                  this.props.navigation.navigate('ReceiveScreen', wallet);
                 }}>
                 <Text>입금</Text>
               </Button>
               <Button
                 bordered
                 warning
-                style={{flex: 1, justifyContent: 'center', marginLeft: 10}}>
+                style={{flex: 1, justifyContent: 'center', marginLeft: 10}}
+                onPress={() =>
+                  this.props.navigation.navigate('SendScreen', wallet)
+                }>
                 <Text>출금</Text>
               </Button>
             </Body>

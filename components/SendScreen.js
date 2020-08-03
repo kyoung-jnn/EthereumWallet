@@ -1,5 +1,13 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, Clipboard, Share, Alert} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Clipboard,
+  Share,
+  Alert,
+  TouchableOpacity,
+  Slider,
+} from 'react-native';
 import {
   Container,
   Content,
@@ -15,6 +23,9 @@ import {
   Thumbnail,
   Title,
   Toast,
+  Item,
+  Input,
+  Label,
 } from 'native-base';
 import {ethers} from 'ethers';
 
@@ -22,6 +33,7 @@ export default class SendScreen extends Component {
   static navigationOptions = {
     header: null,
   };
+  
   constructor(props) {
     super(props);
 
@@ -56,7 +68,8 @@ export default class SendScreen extends Component {
     let ether = 0;
     try {
       ether = ethers.utils.parseEther(String(this.state.value || 0));
-      if (ether.lte(0)) { // 0 보다 작으면
+      if (ether.lte(0)) {
+        // 0 보다 작으면
         return Alert.alert('이제 금액을 확인해주세요.');
       }
 
@@ -80,11 +93,150 @@ export default class SendScreen extends Component {
       return Alert.alert('이체 금액을 확인해주세요.');
     }
 
+    // 받는 주소 검증
     try {
-    } catch (e) {}
+      if (!this.checkAddress(this.state.toAddress)) {
+        return Alert.alert('받는 주소를 확인해주세요.');
+      }
+    } catch (e) {
+      return Alert.alert('받는 주소를 확인해주세요.');
+    }
 
     Alert.alert('ok');
   };
 
-  render() {}
+  render() {
+    const wallet = this.state.wallet;
+
+    return (
+      <Container style={StyleSheet.container}>
+        <Header>
+          <Left>
+            <Button
+              transparent
+              onPress={() => this.props.navigation.goBack()}></Button>
+          </Left>
+          <Body>
+            <Title>{wallet.symbol} 출금</Title>
+          </Body>
+        </Header>
+        <Content padder>
+          <View style={styles.item}>
+            <Text style={styles.label}>이체 금액</Text>
+            <Item last regular style={styles.input}>
+              <Input
+                keyboardType="numeric"
+                value={this.state.value}
+                onChangeText={(value) =>
+                  this.setState({value: value.replace(/[^0-9|\.]/g, '')})
+                }
+                placeholder="보내는 금액을 입력해주세요."
+                placeholderTextColor="#BBB"></Input>
+            </Item>
+          </View>
+          <View style={styles.item}>
+            <Text style={styles.label}>받는 주소</Text>
+            <Item regular style={styles.input}>
+              <Input
+                value={this.state.toAddress}
+                onChangeText={(toAddress) => this.setState({toAddress})}
+                placeholder="이더리움 주소를 입력해주세요."
+                placeholderTextColor="#BBB"
+              />
+              <TouchableOpacity>
+                <Icon name="qrcode-scan" type="MaterialCommunityIcons" />
+              </TouchableOpacity>
+            </Item>
+          </View>
+          <View style={styles.item}>
+            <Text style={styles.label}>가스 수수료</Text>
+            <Slider
+              value={parseFloat(this.state.gasPrice) || 0}
+              onValueChange={(gasPrice) =>
+                this.setState({gasPrice: gasPrice.toFixed(1)})
+              }
+              maximumValue={7}
+              minimumValue={1.1}
+              step={0.1}
+              minimumTrackTintColor="orangered"
+              maximumTrackTintColor="royalblue"
+            />
+            <View
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <Text note>Slow</Text>
+              <Text note>Fastest</Text>
+            </View>
+          </View>
+          <Card style={styles.item}>
+            <CardItem header>
+              <Text note>Advanced Options</Text>
+            </CardItem>
+            <CardItem>
+              <Body>
+                <View style={{width: '100%'}}>
+                  <Item inlineLabel stackedLabel>
+                    <Label>가스가격(GWei)</Label>
+                    <Input
+                      value={this.state.gasPrice}
+                      onChangeText={(gasPrice) =>
+                        this.setState({gasPrice: gasPrice || '0'})
+                      }
+                    />
+                  </Item>
+                  <Item inlineLabel stackedLabel>
+                    <Label>가스 한도</Label>
+                    <Input
+                      value={this.state.gasLimit}
+                      onChangeText={(gasLimit) =>
+                        this.setState({gasLimit: gasLimit || '0'})
+                      }
+                    />
+                  </Item>
+                </View>
+              </Body>
+            </CardItem>
+          </Card>
+          <View style={styles.item}>
+            <Button
+              block
+              // disabled={!this.state.isReady}
+              onPress={this.next}>
+              <Text>확인</Text>
+            </Button>
+          </View>
+        </Content>
+      </Container>
+    );
+  }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  center: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  item: {
+    marginVertical: 10,
+  },
+  input: {
+    backgroundColor: 'rgba(245, 245, 245, 1.0)',
+    paddingLeft: 10,
+    borderBottomEndRadius: 5,
+    borderBottomStartRadius: 5,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+  },
+  label: {
+    marginLeft: 5,
+    marginBottom: 10,
+    color: '#555',
+  },
+});
