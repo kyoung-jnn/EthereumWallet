@@ -12,14 +12,20 @@ import {
   Button,
 } from 'native-base';
 import {NavigationEvents} from 'react-navigation';
-import {NativeViewGestureHandler} from 'react-native-gesture-handler';
-
 import WalletComponent from './WalletComponent';
 import {ethers} from 'ethers';
 
 export default class WalletsScreen extends Component {
   static navigationOptions = {
     title: '이더리움 지갑',
+    headerStyle: {
+      backgroundColor: 'black',
+    },
+    headerTitleStyle: {
+      fontWeight: 'bold',
+      color: 'white',
+      textAlign: 'center'
+    }
   };
 
   constructor(props) {

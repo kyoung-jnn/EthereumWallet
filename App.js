@@ -1,6 +1,5 @@
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
-
 import React, {Component} from 'react';
 import { Root } from 'native-base';
 import WalletsScreen from './components/WalletsScreen';
@@ -23,7 +22,7 @@ const AppStackNavigator = createStackNavigator(
   },
   {
     defaultNavigationOptions: {
-      headerBackTitle: null, // 뒤로가기 버튼 타이틀 제거.
+      headerTitleAlign: 'center'
     },
   },
 );

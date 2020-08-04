@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, Clipboard, Share} from 'react-native';
+import {StyleSheet, Clipboard, Share} from 'react-native';
 import {
   Container,
   Content,
@@ -28,14 +28,17 @@ export default class ReceiveScreen extends Component {
 
     return (
       <Container style={styles.container}>
-        <Header style={{backgroundColor:'black', titleFontColor:'black'}}>
+        <Header
+          style={{
+            backgroundColor: 'black',
+          }}>
           <Left>
             <Button transparent onPress={() => this.props.navigation.goBack()}>
-              <Icon name="arrow-back" />
+              <Icon name="ios-camera-outline" />
             </Button>
           </Left>
-          <Body>
-            <Title >{wallet.symbol} 입금</Title>
+          <Body style={{marginLeft:70}}>
+            <Title>{wallet.symbol} 입금</Title>
           </Body>
         </Header>
         <Content padder>
@@ -82,7 +85,6 @@ export default class ReceiveScreen extends Component {
                     style={{fontSize: 15, color: '#777'}}
                   />
                 </Text>
-                
               </Body>
             </CardItem>
             <CardItem>

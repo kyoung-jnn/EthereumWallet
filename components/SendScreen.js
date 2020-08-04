@@ -104,7 +104,7 @@ export default class SendScreen extends Component {
     }
 
     Alert.alert('ok');
-    this.props.navigation.navigate('ComfimTxScreen',this.state);
+    this.props.navigation.navigate('ComfimTxScreen', this.state);
   };
 
   render() {
@@ -112,13 +112,16 @@ export default class SendScreen extends Component {
 
     return (
       <Container style={StyleSheet.container}>
-        <Header>
+        <Header
+          style={{
+            backgroundColor: 'black',
+          }}>
           <Left>
             <Button transparent onPress={() => this.props.navigation.goBack()}>
               <Icon name="arrow-back" />
             </Button>
           </Left>
-          <Body>
+          <Body style={{marginLeft: 70}}>
             <Title>{wallet.symbol} 출금</Title>
           </Body>
         </Header>
@@ -146,7 +149,7 @@ export default class SendScreen extends Component {
                 placeholderTextColor="#BBB"
               />
               <TouchableOpacity>
-                <Icon name="qrcode-scan" type="MaterialCommunityIcons"/>
+                <Icon name="qrcode-scan" type="MaterialCommunityIcons" />
               </TouchableOpacity>
             </Item>
           </View>
@@ -204,6 +207,7 @@ export default class SendScreen extends Component {
           </Card>
           <View style={styles.item}>
             <Button
+              success
               block
               // disabled={!this.state.isReady}
               onPress={this.next}>

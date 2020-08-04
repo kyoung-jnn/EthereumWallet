@@ -17,7 +17,12 @@ import {
 } from 'native-base';
 
 export default class WalletInfoComponent extends Component {
-  static navigationOptions = {};
+  static navigationOptions = {
+    title:'지갑 상세정보',
+    headerTitleStyle: {
+      fontWeight: 'bold',
+    }
+  };
 
   render() {
     const wallet = this.props.navigation.state.params;
