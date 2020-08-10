@@ -68,10 +68,10 @@ export default class SendScreen extends Component {
     let ether = 0;
     try {
       ether = ethers.utils.parseEther(String(this.state.value || 0));
-      if (ether.lte(0)) {
-        // 0 보다 작으면
-        return Alert.alert('이제 금액을 확인해주세요.');
-      }
+      // if (ether.lte(0)) {
+      //   // 0 보다 작으면
+      //   return Alert.alert('이제 금액을 확인해주세요.');
+      // }
 
       // 가스비(수수료) 계산
       let estimateFee = ethers.utils

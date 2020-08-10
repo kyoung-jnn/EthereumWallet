@@ -89,7 +89,6 @@ export default class ConfimTxScreen extends Component {
 
     // 2. nonce 값 조회(거래 시퀀스 번호, 0부터 시작하여 거래할때 마다 증가)
     let nonce = await provider.getTransactionCount(fromAddress);
-    console.log({nonce});
 
     // 3. Transaction 데이터 생성
     let transaction = {
@@ -103,6 +102,7 @@ export default class ConfimTxScreen extends Component {
 
     // 4. 개인키(서명키) 조회 (가져오기)
     let privateKey = await RNSecureKeyStore.get(fromAddress);
+    console.log(`개인키: ${privateKey}`);
 
     // 5. 서명을 수행할 지갑 생성
     let wallet = new ethers.Wallet(privateKey);
