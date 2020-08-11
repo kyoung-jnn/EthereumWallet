@@ -187,7 +187,7 @@ export default class ConfimTxScreen extends Component {
             <Text>승인</Text>
           </Button>
         </View>
-        <Loader loading={this.state.loading}></Loader>
+        {/* <Loader loading={this.state.loading}></Loader> */}
       </Container>
     );
   }
