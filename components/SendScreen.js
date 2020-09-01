@@ -34,13 +34,14 @@ export default class SendScreen extends Component {
     header: null,
   };
 
+
+  
   constructor(props) {
     super(props);
 
     const wallet = props.navigation.state.params;
-
     this.state = {
-      fromAddress: wallet.address,
+      fromAddress: '',
       toAddress: '',
       gasPrice: '2', // 가스 비용
       gasLimit: '21000',
@@ -67,11 +68,13 @@ export default class SendScreen extends Component {
   next = () => {
     let ether = 0;
     try {
+      console.log(this.state.value);
       ether = ethers.utils.parseEther(String(this.state.value || 0));
-      // if (ether.lte(0)) {
-      //   // 0 보다 작으면
-      //   return Alert.alert('이제 금액을 확인해주세요.');
-      // }
+      console.log(ether);
+      if (ether.lte(0)) {
+        // 0 보다 작으면
+        return Alert.alert('이제 금액을 확인해주세요.');
+      }
 
       // 가스비(수수료) 계산
       let estimateFee = ethers.utils
@@ -80,18 +83,18 @@ export default class SendScreen extends Component {
 
       // 이제하는데 필요한 총 금액 계산 (이체 금액 + 가스비)
       let totalRequiredAmount = ether.add(estimateFee);
-
-      // let balance = ethers.utils.parseEther(wallet.balance);
-      // if (balance.lt(totalRequiredAmount)) {
-      //   let totalRequiredEther = ethers.utils.formatEther(totalRequiredAmount);
-      //   return Alert.alert(
-      //     '잔액이 부족합니다.',
-      //     `수수료 포함하여 필요한 금액\n${totalRequiredEther} ETH`,
-      //   );
-      // }
+      console.log(ethers.utils.formatEther(totalRequiredAmount));
+      
+      if (ether.lt(totalRequiredAmount)) {
+        let totalRequiredEther = ethers.utils.formatEther(totalRequiredAmount);
+        return Alert.alert(
+          '잔액이 부족합니다.',
+          `수수료 포함하여 필요한 금액\n${totalRequiredEther} ETH`,
+        );
+      }
     } catch (e) {
       console.log(e);
-      return Alert.alert('이체 금액을 확인해주세요.');
+      return Alert.alert('전송중 오류가 발생했습니다.');
     }
 
     // 받는 주소 검증
@@ -207,7 +210,7 @@ export default class SendScreen extends Component {
           </Card>
           <View style={styles.item}>
             <Button
-              success
+              
               block
               // disabled={!this.state.isReady}
               onPress={this.next}>
