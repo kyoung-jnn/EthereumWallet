@@ -34,8 +34,6 @@ export default class SendScreen extends Component {
     header: null,
   };
 
-
-  
   constructor(props) {
     super(props);
 
