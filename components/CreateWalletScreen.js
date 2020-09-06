@@ -49,7 +49,7 @@ export default class CreateWalletScreen extends Component {
     try {
       // 지갑 목록 정보 가져오기
       const wallets = JSON.parse(await AsyncStorage.getItem('WALLETS')) || [];
-
+      
       // 지갑 목록에 추가하기
       wallets.push(wallet);
 
@@ -97,7 +97,6 @@ export default class CreateWalletScreen extends Component {
 
     console.log('체크섬 주소: ');
     console.log(address);
-    alert(address);
 
     // 저장할 지갑 정보
     const wallet = {

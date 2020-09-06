@@ -14,6 +14,7 @@ import {
 import {NavigationEvents} from 'react-navigation';
 import WalletComponent from './WalletComponent';
 import {ethers} from 'ethers';
+import RNSecureKeyStore, {ACCESSIBLE} from 'react-native-secure-key-store';
 
 export default class WalletsScreen extends Component {
   static navigationOptions = {
@@ -34,26 +35,37 @@ export default class WalletsScreen extends Component {
     this.state = {
       wallets: [],
     };
+
   }
 
   // 컴포넌트 활성화시 지갑 정보 불러오기
   // state에 저장
   _onWillFocus = (payload) => {
     AsyncStorage.getItem('WALLETS').then((wallets) => {
+      console.log(wallets);
       this.setState({
         wallets: JSON.parse(wallets) || [],
       });
     });
+
+    
   };
 
   componentDidMount() {
     // 1. provider 생성
     let provider = ethers.getDefaultProvider('ropsten');
 
-    const pollingInterval = 30 * 1000; // 22초
+    const pollingInterval = 60 * 10000; // 22초
     this.poller = setInterval(() => {
       const wallets = [...this.state.wallets];
 
+      // RNSecureKeyStore.get(this.state.wallets[2].address)
+      // .then((res) => {
+      //     console.log(res);
+      // }, (err) => {
+      //     console.log(err);
+      // });
+      
       // 2. 지갑 잔액 조회 시작
       wallets.forEach(wallet => {
         provider.getBalance(wallet.address).then((balance) => {
@@ -68,10 +80,13 @@ export default class WalletsScreen extends Component {
         AsyncStorage.setItem('WALLETS', JSON.stringify(wallets));
       });
 
+
     }, pollingInterval); // 20초 마다 수행하기
   }
 
+  
   render() {
+   
     return (
       <View style={styles.container}>
         <NavigationEvents onWillFocus={this._onWillFocus}> </NavigationEvents>

@@ -50,7 +50,7 @@ export default class ConfimTxScreen extends Component {
       gasLimit,
       value,
     } = props.navigation.state.params; // 이전 화면에서 전달받은 state 가져오기
-
+    console.log('params', props.navigation.state.params);
     // 수수료(가스비) 계산(가스가격 * 가스사용량)
     let estimateFee = ethers.utils.bigNumberify(gasPrice).mul(gasLimit);
 
@@ -76,7 +76,7 @@ export default class ConfimTxScreen extends Component {
   }
 
   // 서명 수행 함수
-  sign = async () => {
+  signFunc = async () => {
     // 로딩 이미지 출력
     this.setState({
       loading: true,
@@ -89,6 +89,7 @@ export default class ConfimTxScreen extends Component {
 
     // 2. nonce 값 조회(거래 시퀀스 번호, 0부터 시작하여 거래할때 마다 증가)
     let nonce = await provider.getTransactionCount(fromAddress);
+    console.log({ nonce });
 
     // 3. Transaction 데이터 생성
     let transaction = {
@@ -97,9 +98,11 @@ export default class ConfimTxScreen extends Component {
       gasPrice: ethers.utils.parseUnits(gasPrice, 'gwei'), // gwei 를 wei 로
       gasLimit: ethers.utils.bigNumberify(gasLimit),
       nonce: nonce,
-      date: '',
+      data: '',
     };
 
+    console.log(transaction);
+    
     // 4. 개인키(서명키) 조회 (가져오기)
     let privateKey = await RNSecureKeyStore.get(fromAddress);
     console.log(`개인키: ${privateKey}`);
@@ -113,8 +116,8 @@ export default class ConfimTxScreen extends Component {
     // 7. 서명된 이더리움 transaction 배포하기
     try {
       const tx = await provider.sendTransaction(sign);
-    
-      console.log(tx);
+      console.log('sendTransaction', tx.hash);
+
       // 8. 완료 화면으로 이동
       this.props.navigation.navigate('CompleteScreen', tx.hash);
     } catch (e) {
@@ -183,7 +186,7 @@ export default class ConfimTxScreen extends Component {
           </View>
         </View>
         <View style={{marginHorizontal:10,marginBottom:30}}>
-          <Button block disabled={false} onPress={this.sign}>
+          <Button block disabled={false} onPress={this.signFunc}>
             <Text>승인</Text>
           </Button>
         </View>

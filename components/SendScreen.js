@@ -16,7 +16,6 @@ import {
   CardItem,
   Body,
   Text,
-  Icon,
   Button,
   Left,
   Right,
@@ -24,9 +23,11 @@ import {
   Title,
   Toast,
   Item,
+  Icon,
   Input,
   Label,
 } from 'native-base';
+// import Icon from 'react-native-vector-icons/Ionicons';
 import {ethers} from 'ethers';
 
 export default class SendScreen extends Component {
@@ -39,7 +40,7 @@ export default class SendScreen extends Component {
 
     const wallet = props.navigation.state.params;
     this.state = {
-      fromAddress: '',
+      fromAddress: wallet.address,
       toAddress: '',
       gasPrice: '2', // 가스 비용
       gasLimit: '21000',
@@ -66,9 +67,7 @@ export default class SendScreen extends Component {
   next = () => {
     let ether = 0;
     try {
-      console.log(this.state.value);
       ether = ethers.utils.parseEther(String(this.state.value || 0));
-      console.log(ether);
       if (ether.lte(0)) {
         // 0 보다 작으면
         return Alert.alert('이제 금액을 확인해주세요.');
@@ -81,15 +80,14 @@ export default class SendScreen extends Component {
 
       // 이제하는데 필요한 총 금액 계산 (이체 금액 + 가스비)
       let totalRequiredAmount = ether.add(estimateFee);
-      console.log(ethers.utils.formatEther(totalRequiredAmount));
-      
-      if (ether.lt(totalRequiredAmount)) {
-        let totalRequiredEther = ethers.utils.formatEther(totalRequiredAmount);
-        return Alert.alert(
-          '잔액이 부족합니다.',
-          `수수료 포함하여 필요한 금액\n${totalRequiredEther} ETH`,
-        );
-      }
+
+      // if (ether.lt(totalRequiredAmount)) {
+      //   let totalRequiredEther = ethers.utils.formatEther(totalRequiredAmount);
+      //   return Alert.alert(
+      //     '잔액이 부족합니다.',
+      //     `수수료 포함하여 필요한 금액\n${totalRequiredEther} ETH`,
+      //   );
+      // }
     } catch (e) {
       console.log(e);
       return Alert.alert('전송중 오류가 발생했습니다.');
@@ -104,8 +102,7 @@ export default class SendScreen extends Component {
       return Alert.alert('받는 주소를 확인해주세요.');
     }
 
-    Alert.alert('ok');
-    this.props.navigation.navigate('ComfimTxScreen', this.state);
+    this.props.navigation.navigate('ComfimTxScreen',this.state);
   };
 
   render() {
@@ -119,7 +116,7 @@ export default class SendScreen extends Component {
           }}>
           <Left>
             <Button transparent onPress={() => this.props.navigation.goBack()}>
-              <Icon name="arrow-back" />
+              <Icon name="ios-arrow-back"></Icon>
             </Button>
           </Left>
           <Body style={{marginLeft: 70}}>
@@ -208,7 +205,6 @@ export default class SendScreen extends Component {
           </Card>
           <View style={styles.item}>
             <Button
-              
               block
               // disabled={!this.state.isReady}
               onPress={this.next}>
